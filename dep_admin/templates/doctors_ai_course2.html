@@ -2,25 +2,11 @@
 {% block dashboard %}
 <div class="xl:container xl:mx-auto">
 
-  <!-- Page header -->
-  <div class="px-0 md:px-0 pb-4">
-    <div class="flex items-center justify-between gap-4 flex-wrap mb-2">
-      <h2 class="text-xl md:text-2xl font-semibold flex items-center gap-2 [&_svg]:size-4">
-        Welcome, {{ user.username }}
-      </h2>
-    </div>
-  </div>
+  {% include 'includes/welcome_header.html' %}
 
   <!-- Doctor data table -->
   <div class="uploaded-data border border-muted rounded-md bg-background p-4 shadow-sm">
-    <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
-      <h2 class="text-xl md:text-2xl font-semibold flex items-center gap-2 [&_svg]:size-4">
-        <span class="rounded-full p-1 border border-border text-primary">
-          <i data-lucide="brain-circuit"></i>
-        </span>
-        AI for Doctors
-      </h2>
-    </div>
+    {% include 'includes/card_header.html' with icon='brain-circuit' title='AI for Doctors' %}
 
     <div class="my-container">
       <!-- Search and actions -->
