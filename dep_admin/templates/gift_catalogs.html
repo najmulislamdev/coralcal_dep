@@ -194,55 +194,7 @@
               </table>
           </div>
 
-        <!-- pagination -->
-        <div class="flex items-center justify-between flex-wrap gap-8 my-3 mt-6">
-            <p class="text-muted-foreground text-sm">
-                Showing {{ data.start_index }} to {{ data.end_index }} of {{ data.paginator.count }} entries
-            </p>
-
-            <div class="flex items-center flex-wrap gap-2 justify-center lg:justify-end">
-                <form method="get" class="flex items-center gap-2">
-                    <input type="hidden" name="search" value="{{ search_query }}">
-                    <input class="input max-w-[100px]" type="number" name="per_page" id="rowsPerPage" min="1" value="{{ per_page }}" onchange="this.form.submit()"> 
-                    <input type="hidden" name="page" value="1">
-                    <p class="font-semibold text-sm">Rows per page</p>
-                </form>
-
-                <!-- page number -->
-              <nav aria-label="Page navigation">
-                  <ul class="pagination flex items-center flex-wrap gap-2">
-                  {% if data.has_previous %}
-                      <li >
-                      <a class="button button--md button--outline"  href="?page={{ data.previous_page_number }}&per_page={{ per_page }}&search={{ search_query }}"><i data-lucide="chevron-left"></i> Previous</a>
-                      </li>
-                  {% else %}
-                      <button disabled="true" class="button button--md button--outline"> <i data-lucide="chevron-left"></i><span class="page-link"> Previous</span></button>
-                  {% endif %}
-
-                  {% for num in data.paginator.page_range %}
-                      {% if data.number == num %}
-                      <li class="page-item">
-                          <span class="button button--md button--outline">{{ num }}</span>
-                      </li>
-                      {% elif num > data.number|add:'-3' and num < data.number|add:'3' %}
-                      <li  class="button button--md button--outline">
-                          <a class="page-link" href="?page={{ num }}&per_page={{ per_page }}&search={{ search_query }}">{{ num }}</a>
-                      </li>
-                      {% endif %}
-                  {% endfor %}
-
-                  {% if data.has_next %}
-                      <li class="page-item">
-                      <a class="button button--md button--outline" href="?page={{ data.next_page_number }}&per_page={{ per_page }}&search={{ search_query }}">Next <i data-lucide="chevron-right"></i> </a>
-                      </li>
-                  {% else %}
-                      <button disabled="true" class="button button--md button--outline"><span>Next</span> <i data-lucide="chevron-right"></i> </button>
-                  {% endif %}
-                  </ul>
-              </nav>
-          </div>
-
-        </div>
+        {% include 'includes/pagination.html' %}
     </div>
   </div>
 
