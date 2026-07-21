@@ -88,7 +88,7 @@ def nfc_export(request):
     # Populate the worksheet with data
     for obj in data:
         row = [
-            obj.dr_id,
+            obj.dr_rpl_id,
             obj.dr_name,
             obj.degree,
             obj.specialty,
