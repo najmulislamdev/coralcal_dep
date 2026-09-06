@@ -11,6 +11,7 @@ from plant_module.models import PlantModule
 from doctors_ai_course2.models import DoctorAiCourseUp
 from doctor_development.models import DoctorDevelopment
 from dr_boishakh_catalog.models import PohelaBoishakhCatalog
+from orthopedic_dr_dev.models import OrthopedicDr
 
 
 def filter_knowledge_series_data(request):
@@ -505,4 +506,55 @@ def filter_boishakh_catalogs_data(request):
         sort_by = f"-{sort_by}"
     data = data.order_by(sort_by)
     
+    return data
+
+
+def filter_orthopedic_dr_dev_data(request):
+    data = OrthopedicDr.objects.select_related('territory')
+
+    # Filter based on the User's profile.
+    try:
+        profile = request.user.userprofile
+        if profile.user_type == 'zone':
+            data = data.filter(territory__zone_name=profile.zone_name)
+        elif profile.user_type == 'region':
+            data = data.filter(territory__region_name=profile.region_name)
+    except UserProfile.DoesNotExist:
+        if not request.user.is_superuser:
+            data = OrthopedicDr.objects.none()
+
+    # Filter Based on search query
+    search_query = request.GET.get('search', '')
+    if search_query:
+        data = data.filter(
+            Q(dr_id__icontains = search_query) |
+            Q(dr_name__icontains = search_query) |
+            Q(territory__territory__icontains = search_query) |
+            Q(territory__territory_name__icontains = search_query) |
+            Q(territory__region_name__icontains = search_query) |
+            Q(territory__zone_name__icontains = search_query)
+        )
+
+    # Filter based on sort and direction.
+    sort = request.GET.get("sort", "territory")
+    direction = request.GET.get("direction", "asc")
+    sort_by = None
+    if sort == "territory":
+        sort_by = "territory__territory"
+    elif sort == "territory_name":
+        sort_by = "territory__territory_name"
+    elif sort == "region":
+        sort_by = "territory__region_name"
+    elif sort == "zone":
+        sort_by = "territory__zone_name"
+    elif sort == "dr_id":
+        sort_by = "dr_id"
+    elif sort == "dr_name":
+        sort_by = "dr_name"
+
+    if direction == "desc":
+        sort_by = f"-{sort_by}"
+
+    if sort_by:
+        data = data.order_by(sort_by)
     return data

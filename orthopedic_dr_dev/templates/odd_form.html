@@ -1,0 +1,116 @@
+{% extends 'base_header.html' %}
+{% load static %}
+{% block head_title %}Enlighten Together | CoralCal Doctor Engagement Platform{% endblock %}
+
+{% block content %}
+<div
+  class="bg-background p-8 rounded-md border border-border shadow-sm max-w-2xl mx-auto"
+>
+  <div class="card">
+    <div class="mb-6 flex justify-between gap-5 text-center ">
+        <h2 class="text-sm sm:text-base md:text-lg font-bold text-primary text-center">
+            Orthopedic Dorctor Development
+        </h2>
+        <div class="flex gap-2">
+            <a href="{% if is_admin_edit %}{% url 'orthopedic_dr_dev' %}{% else %}{% url 'home' %}{% endif %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
+        </div>
+    </div>
+
+    <div id="main-container" class="border border-border p-4 rounded-md">
+        {% if obj %}
+        <div class="bg-muted text-muted-foreground p-2 rounded-md mb-4 text-sm">
+          <p>{% if is_admin_edit %}Editing the entry submitted by {{ obj.territory.territory }}.{% else %}You have already submitted an entry. You can update it below.{% endif %}</p>
+        </div>
+        {% endif %}
+
+        <div class="form-container">
+            <div class="form-header">
+                <form id="uploadForm" method="post" class="flex flex-col gap-6" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-item">
+                        <label class="label" for="dr_id">Doctor RPL ID</label>
+                        <input
+                            type="text"
+                            id="dr_id"
+                            name="dr_id"
+                            maxlength="10"
+                            class="input"
+                            required
+                            placeholder="Enter Doctor RPL ID"
+                            value="{% if obj %}{{ obj.dr_id }}{% endif %}"
+                        />
+                    </div>
+
+                    <div class="form-item">
+                        <label class="label" for="dr_name">Doctor Name</label>
+                        <input
+                            type="text"
+                            id="dr_name"
+                            name="dr_name"
+                            maxlength="100"
+                            class="input"
+                            required
+                            placeholder="Enter Doctor Name"
+                            value="{% if obj %}{{ obj.dr_name }}{% endif %}"
+                        />
+                    </div>
+
+                    {% if obj and obj.image %}
+                    <div class="form-item">
+                        <label class="label">Current Image</label>
+                        <img src="{{ obj.image.url }}" alt="{{ obj.dr_name }}" class="rounded-md border border-border max-h-64 w-auto" />
+                    </div>
+                    {% endif %}
+
+                    <div class="form-item">
+                        <label class="label" for="dr_image">Image</label>
+                        <input
+                          class="input"
+                          type="file"
+                          id="dr_image"
+                          name="dr_image"
+                          accept="image/jpeg,image/png"
+                          {% if not obj %}required{% endif %}
+                          placeholder="Upload Dr. Image"
+                        />
+                        {% if obj %}
+                        <small class="text-muted-foreground">Leave empty to keep the current image.</small>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="button button--md button--primary" onclick="submitForm(event)">
+                        {% if obj %}Update{% else %}Submit{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const hasExistingEntry = {% if obj %}true{% else %}false{% endif %};
+
+  function submitForm(event) {
+    event.preventDefault(); // prevent default form submission
+
+    const drId = document.getElementById('dr_id').value.trim();
+    const drName = document.getElementById('dr_name').value.trim();
+    const drImage = document.getElementById('dr_image');
+
+    if (!drId || !drName) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    if (!hasExistingEntry && !drImage.files.length) {
+      alert('Please upload the Doctor image.');
+      return;
+    }
+
+    // Submit the form after validation
+    document.getElementById('uploadForm').submit();
+  }
+</script>
+{% endblock content %}
