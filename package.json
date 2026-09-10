@@ -1,0 +1,10 @@
+{
+  "name": "coralcal-dep",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Task-runner shim for the CoralCal Django project. This repo has no JavaScript; these scripts exist so `npm test` / `npm run typecheck` delegate to the underlying Python tooling.",
+  "scripts": {
+    "typecheck": "python3 -m compileall -q -x \"(^|/)(venv|staticfiles|node_modules|migrations|\\.git)(/|$)\" .",
+    "test": "python3 scripts/run_tests.py"
+  }
+}
