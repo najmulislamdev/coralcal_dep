@@ -1,0 +1,134 @@
+{% extends 'base_header.html' %}
+{% load static %}
+{% block head_title %}History | Doctor Development Catalogue | CoralCal Doctor Engagement Platform{% endblock %}
+
+{% block content %}
+<div class="xl:container xl:mx-auto">
+
+  <!-- table -->
+  <div class="uploaded-data border border-muted rounded-md bg-background p-4 shadow-sm">
+    <!-- table container header section -->
+    <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+      <h2 class="text-xl md:text-2xl font-semibold flex items-center gap-2 [&_svg]:size-4">
+        <span class="rounded-full p-1 border border-border text-primary">
+          <i data-lucide="history"></i>
+        </span>
+        Doctor Development Catalogue History
+      </h2>
+
+      <div class="flex gap-2">
+        <a href="{% url 'home' %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
+        {% if can_add %}
+        <a href="{% url 'ddc_form' %}" class="button button--sm button--primary"><i data-lucide="plus"></i> Add New</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="bg-muted text-muted-foreground p-2 rounded-md mb-4 text-sm">
+      <p>You have submitted {{ entry_count }} of {{ entry_limit }} allowed entr{{ entry_limit|pluralize:"y,ies" }}.</p>
+    </div>
+
+    <div class="my-container ">
+        <!-- filter section -->
+        <div class="table-actions flex justify-between items-center flex-wrap gap-5 mb-6">
+          <div class="left-actions flex items-center flex-wrap gap-4">
+            <form method="get" >
+              <input
+                type="search"
+                name="search"
+                class="input"
+                placeholder="Search..."
+                value="{{ search_query }}"
+              />
+            </form>
+          </div>
+        </div>
+
+        <!-- table -->
+          <div class="table-container">
+            <table class="table" id="doctorTable">
+              <thead class="table-head">
+                  <tr class="table-row">
+                      <th class="table-head">#</th>
+                      <th class="table-head">
+                          <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=dr_id&direction={% if sort == 'dr_id' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                          Dr. ID
+                          {% if sort == 'dr_id' %}
+                              <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                          {% else %}
+                              <i data-lucide="chevrons-up-down"></i>
+                          {% endif %}
+                          </a>
+                      </th>
+                      <th class="table-head">
+                          <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=dr_name&direction={% if sort == 'dr_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                          Dr. Name
+                          {% if sort == 'dr_name' %}
+                              <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                          {% else %}
+                              <i data-lucide="chevrons-up-down"></i>
+                          {% endif %}
+                          </a>
+                      </th>
+                      <th class="table-head">Item</th>
+                      <th class="table-head">Size</th>
+                      <th class="table-head">Submitted At</th>
+                      <th class="table-head">Actions</th>
+                  </tr>
+              </thead>
+              <tbody class="table-body">
+                  {% for item in data %}
+                  <tr class="table-row">
+                      <td class="table-cell">{{ data.start_index|add:forloop.counter0 }}</td>
+                      <td class="table-cell">{{ item.dr_id }}</td>
+                      <td class="table-cell">{{ item.dr_name }}</td>
+                      <td class="table-cell">
+                          <div class="flex items-center gap-2">
+                              <img src="{% static item.item_image %}" alt="{{ item.item }}" class="w-12 h-12 object-cover rounded-md border border-border">
+                              <span>{{ item.item }}</span>
+                          </div>
+                      </td>
+                      <td class="table-cell">{{ item.size_label|default:"-" }}</td>
+                      <td class="table-cell">{{ item.created_at|date:"Y-m-d" }}</td>
+                      <td class="table-cell">
+                          <a class="button button--icon button--outline" href="{% url 'ddc_edit' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
+
+                          <a class="button button--icon button--outline" onclick="confirmDelete('{% url 'ddc_delete' item.id %}', '{{ item.dr_name|escapejs }}')"><i data-lucide="trash" class="text-destructive"></i></a>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+              </table>
+          </div>
+
+        {% include 'includes/pagination.html' %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function confirmDelete(deleteUrl, instanceName){
+    const name = document.createElement('strong');
+    name.textContent = instanceName;
+    Swal.fire({
+      title: "Are you sure?",
+      html: `Permanently delete the entry for ${name.outerHTML}?<br><br>
+            <span class="text-red-500 font-semibold">This action cannot be undone.</span>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      customClass: {
+        popup: 'border border-border rounded-lg',
+        confirmButton:'button button--md button--destructive',
+        cancelButton: 'button button--md button--secondary'
+      }
+    }).then((result) => {
+      if (result.isConfirmed){
+        window.location.href = deleteUrl;
+      }
+    })
+  }
+</script>
+{% endblock %}

@@ -348,6 +348,15 @@ def export_rgc(request):
 def access_control_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        # Per-territory entry limits travel next to the toggles as {key: limit}.
+        entry_limits = data.pop('entry_limits', {})
+        for key, limit in entry_limits.items():
+            try:
+                limit = int(limit)
+            except (TypeError, ValueError):
+                continue
+            if limit >= 1:
+                AccessControl.objects.filter(key=key).update(entry_limit=limit)
         for key, value in data.items():
             try:
                 obj = AccessControl.objects.get(key=key)
@@ -362,7 +371,8 @@ def access_control_view(request):
     if request.method == 'GET':
         access_controls = AccessControl.objects.all()
         access_control_states = {item.key: item.is_active for item in access_controls}
-        return render(request, 'access_control.html', {'access_control': access_control_states})
+        entry_limits = {item.key: item.entry_limit for item in access_controls}
+        return render(request, 'access_control.html', {'access_control': access_control_states, 'entry_limits': entry_limits})
 
 
 @login_required

@@ -1,0 +1,166 @@
+{% extends 'base_header.html' %}
+{% load static %}
+{% block head_title %}Doctor Development Catalogue | CoralCal Doctor Engagement Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+  .thumbnail {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .thumbnail.selected {
+    border: 2px solid #3b82f6;
+    transform: scale(1.05);
+  }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div
+  class="bg-background p-8 rounded-md border border-border shadow-sm max-w-2xl mx-auto"
+>
+  <div class="card">
+    <div class="mb-6 flex justify-between gap-5 text-center ">
+        <h2 class="text-sm sm:text-base md:text-lg font-bold text-primary text-center">
+            Doctor Development Catalogue
+        </h2>
+        <div class="flex gap-2">
+            {% if is_admin_edit %}
+            <a href="{% url 'ddc_admin' %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
+            {% else %}
+            <a href="{% if obj %}{% url 'ddc_history' %}{% else %}{% url 'home' %}{% endif %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
+            <a href="{% url 'ddc_history' %}" class="button button--sm button--primary"><i data-lucide="history"></i> History</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="main-container" class="border border-border p-4 rounded-md">
+        {% if obj %}
+        <div class="bg-muted text-muted-foreground p-2 rounded-md mb-4 text-sm">
+          <p>{% if is_admin_edit %}Editing the entry submitted by {{ obj.territory.territory }}.{% else %}You are editing a submitted entry.{% endif %}</p>
+        </div>
+        {% elif entry_limit %}
+        <div class="bg-muted text-muted-foreground p-2 rounded-md mb-4 text-sm">
+          <p>You have submitted {{ entry_count }} of {{ entry_limit }} allowed entr{{ entry_limit|pluralize:"y,ies" }}.</p>
+        </div>
+        {% endif %}
+
+        <img src="{% static cover_image %}" alt="Doctor Development Catalogue" class="w-full rounded-md border border-border mb-6" />
+
+        <div class="form-container">
+            <div class="form-header">
+                <form id="uploadForm" method="post" class="flex flex-col gap-6">
+                    {% csrf_token %}
+                    <input type="hidden" id="item" name="item" value="{% if obj %}{{ obj.item }}{% endif %}">
+                    <div class="form-item">
+                        <label class="label" for="dr_id">Doctor RPL ID</label>
+                        <input
+                            type="text"
+                            id="dr_id"
+                            name="dr_id"
+                            maxlength="10"
+                            class="input"
+                            required
+                            placeholder="Enter Doctor RPL ID"
+                            value="{% if obj %}{{ obj.dr_id }}{% endif %}"
+                        />
+                    </div>
+
+                    <div class="form-item">
+                        <label class="label" for="dr_name">Doctor Name</label>
+                        <input
+                            type="text"
+                            id="dr_name"
+                            name="dr_name"
+                            maxlength="100"
+                            class="input"
+                            required
+                            placeholder="Enter Doctor Name"
+                            value="{% if obj %}{{ obj.dr_name }}{% endif %}"
+                        />
+                    </div>
+
+                    <div class="form-item">
+                        <label class="label">Select Item</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {% for item in items %}
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300 {% if obj and obj.item == item.code %}selected{% endif %}"
+                                 data-code="{{ item.code }}"
+                                 data-needs-size="{{ item.needs_size|yesno:'true,false' }}"
+                                 onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">{{ item.code }}</p>
+                              <img src="{% static item.image %}" alt="{{ item.code }}" class="object-cover w-full p-2">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-item hidden" id="size_container">
+                        <label class="label" for="size">Select Size</label>
+                        <select id="size" name="size" class="input">
+                            <option value="">Select size</option>
+                            {% for code, label in sizes %}
+                            <option value="{{ code }}" {% if obj and obj.size == code %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="button button--md button--primary" onclick="submitForm(event)">
+                        {% if obj %}Update{% else %}Submit{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Show the size dropdown only for items that come in sizes; shawls clear it.
+  function toggleSize(needsSize) {
+    const container = document.getElementById('size_container');
+    const size = document.getElementById('size');
+    container.classList.toggle('hidden', !needsSize);
+    size.required = needsSize;
+    if (!needsSize) size.value = '';
+  }
+
+  function selectThumbnail(element) {
+    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('item').value = element.dataset.code;
+    toggleSize(element.dataset.needsSize === 'true');
+  }
+
+  function submitForm(event) {
+    event.preventDefault(); // prevent default form submit
+
+    const drId = document.getElementById('dr_id').value.trim();
+    const drName = document.getElementById('dr_name').value.trim();
+    const item = document.getElementById('item').value;
+    const size = document.getElementById('size');
+
+    if (!drId || !drName) {
+      alert('Please fill out all fields.');
+      return;
+    }
+
+    if (!item) {
+      alert('Please select an item.');
+      return;
+    }
+
+    if (size.required && !size.value) {
+      alert('Please select a size.');
+      return;
+    }
+
+    document.getElementById('uploadForm').submit();
+  }
+
+  // Restore the size dropdown for an entry being edited.
+  window.addEventListener('DOMContentLoaded', () => {
+    const selected = document.querySelector('.thumbnail.selected');
+    if (selected) toggleSize(selected.dataset.needsSize === 'true');
+  });
+</script>
+{% endblock content %}

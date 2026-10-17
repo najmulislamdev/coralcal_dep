@@ -38,5 +38,7 @@ urlpatterns = [
     path('nfc_export', view.nfc_export, name='nfc_export'),
     path('orthopedic_dr_dev', view.orthopedic_dr_dev, name='orthopedic_dr_dev'),
     path('export_orthopedic_dr_dev', view.export_orthopedic_dr_dev, name='export_orthopedic_dr_dev'),
-    path('download_orthopedic_dr_dev', view.download_orthopedic_dr_dev, name='download_orthopedic_dr_dev')
+    path('download_orthopedic_dr_dev', view.download_orthopedic_dr_dev, name='download_orthopedic_dr_dev'),
+    path('ddc_admin', view.ddc_admin, name='ddc_admin'),
+    path('ddc_export', view.ddc_export, name='ddc_export'),
 ]

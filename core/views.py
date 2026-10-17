@@ -64,5 +64,6 @@ def territory_home(request):
         'gift_voucher_catalog': {'label': "Gift Voucher Catalogue", 'url_name': 'gvc_form', 'is_active': access_control_states['gvc_26']},
         'nfc_card_info': {'label': "NFC Card Info", 'url_name': 'nfc_form', 'is_active': access_control_states['nfc_card_info']},
         'orthopedic_dr_development': {'label': "Orthopedic Dr. Development", 'url_name': 'odd_form', 'is_active': access_control_states['orthopedic_dr_development']},
+        'doctor_dev_catalogue': {'label': "Doctor Development Catalogue", 'url_name': 'ddc_form', 'is_active': access_control_states.get('doctor_dev_catalogue', False)},
     }
     return render(request, 'home.html', {'events': events})

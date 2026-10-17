@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'gift_voucher_catalog',
     'nfc_card_info',
     'orthopedic_dr_dev',
+    'doctor_dev_catalogue',
 ]
 
 MIDDLEWARE = [

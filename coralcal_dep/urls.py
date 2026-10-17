@@ -22,4 +22,5 @@ urlpatterns = [
     path('gvc/', include('gift_voucher_catalog.urls')),
     path('nfc/', include('nfc_card_info.urls')),
     path('odd/', include('orthopedic_dr_dev.urls')),
+    path('ddc/', include('doctor_dev_catalogue.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
