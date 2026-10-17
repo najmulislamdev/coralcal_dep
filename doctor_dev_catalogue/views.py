@@ -9,7 +9,7 @@ from core.models import Territory, UserProfile
 from dep_admin.models import AccessControl
 from doctor_dev_catalogue.models import DoctorDevCatalogue
 from doctor_dev_catalogue.constants import (
-    ACCESS_KEY, DEFAULT_ENTRY_LIMIT, COVER_IMAGE, ITEMS, ITEMS_BY_CODE, SIZE_LABELS,
+    ACCESS_KEY, DEFAULT_ENTRY_LIMIT, ITEMS, ITEMS_BY_CODE, SIZE_LABELS,
 )
 
 # Create your views here.
@@ -107,7 +107,6 @@ def form_context(obj=None, **extra):
         'obj': obj,
         'items': ITEMS,
         'sizes': SIZE_LABELS.items(),
-        'cover_image': COVER_IMAGE,
     }
     context.update(extra)
     return context

@@ -3,17 +3,15 @@
 ACCESS_KEY = 'doctor_dev_catalogue'
 DEFAULT_ENTRY_LIMIT = 1
 
-COVER_IMAGE = 'doctor_dev_catalogue/images/cover.jpeg'
-
-# Selectable items in display order. Shawls (SI-*) come in one size, the rest
+# Selectable items in display order. Shawls (SL-*) come in one size, the rest
 # need a size picked from SIZE_LABELS.
 ITEMS = [
     {'code': 'SW-01', 'image': 'doctor_dev_catalogue/images/SW-01.jpeg', 'needs_size': True},
     {'code': 'SB-02', 'image': 'doctor_dev_catalogue/images/SB-02.jpeg', 'needs_size': True},
     {'code': 'SG-03', 'image': 'doctor_dev_catalogue/images/SG-03.jpeg', 'needs_size': True},
     {'code': 'SB-04', 'image': 'doctor_dev_catalogue/images/SB-04.jpeg', 'needs_size': True},
-    {'code': 'SI-05', 'image': 'doctor_dev_catalogue/images/SI-05.jpeg', 'needs_size': False},
-    {'code': 'SI-06', 'image': 'doctor_dev_catalogue/images/SI-06.jpeg', 'needs_size': False},
+    {'code': 'SL-05', 'image': 'doctor_dev_catalogue/images/SL-05.jpeg', 'needs_size': False},
+    {'code': 'SL-06', 'image': 'doctor_dev_catalogue/images/SL-06.jpeg', 'needs_size': False},
 ]
 ITEMS_BY_CODE = {item['code']: item for item in ITEMS}
 
